@@ -14,19 +14,26 @@ pipeline {
             }
         }
 
+
+
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh '''
-                        sonar-scanner \
-                          -Dsonar.projectKey=fleetman-webapp \
-                          -Dsonar.projectName=Fleetman-Webapp \
-                          -Dsonar.sources=dist \
-                          -Dsonar.sourceEncoding=UTF-8
-                    '''
+                script {
+                    def scannerHome = tool 'SonarScanner'
+                    withSonarQubeEnv('SonarQube') {
+                        sh """
+                            ${scannerHome}/bin/sonar-scanner \
+                              -Dsonar.projectKey=fleetman-webapp \
+                              -Dsonar.projectName=Fleetman-Webapp \
+                              -Dsonar.sources=dist \
+                              -Dsonar.sourceEncoding=UTF-8
+                        """
+                    }
                 }
             }
         }
+
+
 
         stage('Build Docker Image') {
             steps {
