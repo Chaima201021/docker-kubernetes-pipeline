@@ -14,6 +14,20 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh '''
+                        sonar-scanner \
+                          -Dsonar.projectKey=fleetman-webapp \
+                          -Dsonar.projectName=Fleetman-Webapp \
+                          -Dsonar.sources=dist \
+                          -Dsonar.sourceEncoding=UTF-8
+                    '''
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t $DOCKER_IMAGE .'
@@ -52,3 +66,4 @@ pipeline {
         }
     }
 }
+
