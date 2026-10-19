@@ -7,10 +7,16 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
+         stage('Checkout') {
             steps {
-                git branch: 'master',
-                    url: 'https://github.com/Chaima201021/docker-kubernetes-pipeline.git'
+                retry(3) {
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: '*/master']],
+                        extensions: [[$class: 'CloneOption', depth: 1, shallow: true, noTags: true]],
+                        userRemoteConfigs: [[url: 'https://github.com/Chaima201021/docker-kubernetes-pipeline.git']]
+                    ])
+                }
             }
         }
 
