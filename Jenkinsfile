@@ -31,7 +31,7 @@ pipeline {
                               -Dsonar.projectKey=fleetman-webapp \
                               -Dsonar.projectName=Fleetman-Webapp \
                               -Dsonar.sources=dist \
-                              -Dsonar.exclusions=**/*.js \
+                              -Dsonar.nodejs.executable=/usr/bin/node \
                               -Dsonar.sourceEncoding=UTF-8
                         """
                     }
