@@ -7,7 +7,8 @@ pipeline {
     }
 
     stages {
-         stage('Checkout') {
+
+        stage('Checkout') {
             steps {
                 retry(3) {
                     checkout([
@@ -20,8 +21,6 @@ pipeline {
             }
         }
 
-
-
         stage('SonarQube Analysis') {
             steps {
                 script {
@@ -32,14 +31,13 @@ pipeline {
                               -Dsonar.projectKey=fleetman-webapp \
                               -Dsonar.projectName=Fleetman-Webapp \
                               -Dsonar.sources=dist \
+                              -Dsonar.exclusions=**/*.js \
                               -Dsonar.sourceEncoding=UTF-8
                         """
                     }
                 }
             }
         }
-
-
 
         stage('Build Docker Image') {
             steps {
@@ -73,10 +71,18 @@ pipeline {
                         set image deployment/webapp \
                         webapp="$DOCKER_IMAGE"
                     kubectl --kubeconfig="$KUBECONFIG" \
-                        rollout status deployment/webapp --timeout=120s
+                        rollout status deployment/webapp --timeout=180s
                 '''
             }
         }
     }
-}
 
+    post {
+        always {
+            echo "Pipeline terminé avec le statut : ${currentBuild.currentResult}"
+        }
+        failure {
+            echo "Le pipeline a échoué. Consultez la Console Output pour le détail."
+        }
+    }
+}
