@@ -23,18 +23,22 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                script {
-                    def scannerHome = tool 'SonarScanner'
-                    withSonarQubeEnv('SonarQube') {
-                        sh """
-                            ${scannerHome}/bin/sonar-scanner \
-                              -Dsonar.projectKey=fleetman-webapp \
-                              -Dsonar.projectName=Fleetman-Webapp \
-                              -Dsonar.sources=dist \
-                              -Dsonar.nodejs.executable=/usr/bin/node \
-                              -Dsonar.exclusions=**/*.js,**/*.css \
-                              -Dsonar.sourceEncoding=UTF-8
-                        """
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    timeout(time: 6, unit: 'MINUTES') {
+                        script {
+                            def scannerHome = tool 'SonarScanner'
+                            withSonarQubeEnv('SonarQube') {
+                                sh """
+                                    ${scannerHome}/bin/sonar-scanner \
+                                      -Dsonar.projectKey=fleetman-webapp \
+                                      -Dsonar.projectName=Fleetman-Webapp \
+                                      -Dsonar.sources=dist \
+                                      -Dsonar.nodejs.executable=/usr/bin/node \
+                                      -Dsonar.exclusions=**/*.js,**/*.css \
+                                      -Dsonar.sourceEncoding=UTF-8
+                                """
+                            }
+                        }
                     }
                 }
             }
